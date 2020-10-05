@@ -1,8 +1,6 @@
-const ImapClient = require("emailjs-imap-client");
 import {ParsedMail, simpleParser} from "mailparser";
 import { IServerInfo } from "./ServerInfo";
-import { threadId } from "worker_threads";
-
+const ImapClient = require("emailjs-imap-client");
 
 export interface ICallOptions {
     mailbox: string,
@@ -33,21 +31,22 @@ export class Worker {
         const client: any = new ImapClient.default(
             Worker.serverInfo.imap.host,
             Worker.serverInfo.imap.port,
-            {auth: Worker.serverInfo.imap.auth}
-        )
-        client.logLevel = client.LOG_LEVEL_NODE;
+            { auth : Worker.serverInfo.imap.auth }
+        );
+        client.logLevel = client.LOG_LEVEL_NONE;
         client.onerror = (inError: Error) => {
-            console.log("IMAP.Worker.listMailboxes(): Connection error",
-            inError);
-        }
+        console.log("IMAP.Worker.listMailboxes(): Connection error", inError);
+        };
         await client.connect();
+        console.log("IMAP.Worker.listMailboxes(): Connected");
+
         return client;
     }
     public async listMailboxes(): Promise<IMailbox[]> {
         const client: any = await this.connectToServer();
         const mailboxes: any = await client.listMailboxes();
         await client.close();
-        const finalMailboxes : IMailbox[] = [];
+        const finalMailboxes : IMailbox[] = mailboxes;
         const iterateChildren: Function = (inArray: any[]): void => {
             inArray.forEach((inValue:any) => {
                 finalMailboxes.push({
