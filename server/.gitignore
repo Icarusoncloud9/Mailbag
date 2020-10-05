@@ -1,3 +1,6 @@
+# Ignore sensitive information
+serverInfo.json
+
 # Logs
 logs
 *.log
