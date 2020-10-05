@@ -23,9 +23,10 @@ async (inRequest: Request, inResponse: Response) => {
     try {
         const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
         const mailboxes: IMAP.IMailbox[] = await imapWorker.listMailboxes();
-        inResponse.json(mailboxes);
+        console.log(mailboxes)
+        inResponse.status(200).json(mailboxes);
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send(inError)
     }
 });
 
@@ -37,9 +38,9 @@ async (inRequest: Request, inResponse: Response) => {
         const messages: IMAP.IMessage[] = await imapWorker.listMessages({
             mailbox: inRequest.params.mailbox
         });
-        inResponse.json(messages);
+        inResponse.status(200).json(messages);
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send("error")
     }
 });
 
@@ -52,9 +53,9 @@ async (inRequest: Request, inResponse: Response) => {
             mailbox: inRequest.params.mailbox,
             id: parseInt(inRequest.params.id, 10)
         })
-        inResponse.send(messageBody);
+        inResponse.status(200).send(messageBody);
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send("error")
     }
 });
 
@@ -67,9 +68,9 @@ async (inRequest: Request, inResponse: Response) => {
             mailbox: inRequest.params.mailbox,
             id: parseInt(inRequest.params.id, 10)
         })
-        inResponse.send("ok");
+        inResponse.status(200).send("ok");
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send("error")
     }
 });
 
@@ -79,9 +80,9 @@ async (inRequest: Request, inResponse: Response) => {
     try {
         const smtpWorker: SMTP.Worker = new SMTP.Worker(serverInfo);
         await smtpWorker.sendMessage(inRequest.body);
-        inResponse.send("ok");
+        inResponse.status(201).send("ok");
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send("error")
     }
 });
 
@@ -91,9 +92,9 @@ async (inRequest: Request, inResponse: Response) => {
     try {
         const contactsWorker: Contacts.Worker = new Contacts.Worker();
         const contacts: IContact[] = await contactsWorker.listContacts();
-        inResponse.json(contacts);
+        inResponse.status(200).json(contacts);
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send("error")
     }
 });
 
@@ -103,9 +104,22 @@ async (inRequest: Request, inResponse: Response) => {
     try {
         const contactsWorker: Contacts.Worker = new Contacts.Worker();
         const contact: IContact = await contactsWorker.addContact(inRequest.body)
-        inResponse.json(contact);
+        inResponse.status(201).json(contact);
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send("error")
+    }
+});
+
+// UPDATE A CONTACT
+app.put("/contacts/:id/:name/:email",
+async (inRequest: Request, inResponse: Response) => {
+    let {id, name, email} = inRequest.params
+    try {
+        const contactsWorker: Contacts.Worker = new Contacts.Worker();
+        await contactsWorker.updateContact(id, name, email)
+        inResponse.status(201).json("ok");
+    } catch (inError) {
+        inResponse.status(500).send("error")
     }
 });
 
@@ -115,8 +129,13 @@ async (inRequest: Request, inResponse: Response) => {
     try {
         const contactsWorker: Contacts.Worker = new Contacts.Worker();
         await contactsWorker.deleteContact(inRequest.params.id)
-        inResponse.json("ok");
+        inResponse.status(200).json("ok");
     } catch (inError) {
-        inResponse.send("error")
+        inResponse.status(500).send("error")
     }
 });
+
+// Start app listening.
+app.listen(80, () => {
+    console.log("MailBag server open for requests");
+  }); 
