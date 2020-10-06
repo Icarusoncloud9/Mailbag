@@ -1,6 +1,6 @@
 {
   "compilerOptions" : {
-    "outDir": "./dist",
+    "outDir": "./src",
     "esModuleInterop" : true,
     "sourceMap" : true,
     "noImplicitAny" : false,
@@ -12,5 +12,8 @@
     "allowJs" : true,
     "baseUrl" : "./",
     "paths" : { "components/*" : [ "src/components/*" ] }
-  },
+  }, 
+  "exclude": [
+    "./node_modules"
+  ]
 }
