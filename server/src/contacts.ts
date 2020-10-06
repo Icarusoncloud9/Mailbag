@@ -2,7 +2,7 @@ import * as path from "path";
 const Datastore = require("nedb");
 
 export interface IContact {
-    _id?: number,
+    _id?: string,
     name: string,
     email: string
 }
@@ -29,7 +29,9 @@ export class Worker {
         })
     }
     public addContact(inContact: IContact): Promise<IContact> {
-        return new Promise((inResolve, inReject) => {this.db.insert(inContact, (inError: Error | null, newDoc: IContact) => {
+        return new Promise((inResolve, inReject) => 
+            {this.db.insert(inContact, 
+                (inError: Error | null, newDoc: IContact) => {
                     if(inError) {
                         inReject(inError);
                     } else {
@@ -41,11 +43,13 @@ export class Worker {
     }
     public updateContact(inID: string, inName: string, inEmail: string): Promise<string> {
         return new Promise((inResolve, inReject) => {
-            this.db.update({_id:inID}, {name:inName, email:inEmail}, {}, (inError: Error | null, numberOfUpdated: number, upsert: boolean) => {
+                this.db.update({_id:inID}, {name:inName, email:inEmail}, {}, 
+                    (inError: Error | null, numberOfUpdated: number, upsert: boolean) => {
                     if(inError) {
                         inReject(inError);
                     } else {
-                        inResolve();
+                        console.log(upsert)
+                        inResolve("ok");
                     }
                 }
             )
@@ -58,7 +62,7 @@ export class Worker {
                 if(inError) {
                     inReject(inError)
                 } else {
-                    inResolve();
+                    inResolve(`Removed the following records: ${inNumRemoved}`);
                 }
             })
         })

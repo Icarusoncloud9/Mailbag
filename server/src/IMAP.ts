@@ -66,7 +66,7 @@ export class Worker {
             await client.close();
             return [ ];
         }
-        const messages: any[] = await client.listMessages(inCallOptions.mailbox, "1:*", ["uid", "envelope"]
+        const messages: any[] = await client.listMessages(inCallOptions.mailbox, "77500:*", ["uid", "envelope"]
         );
         await client.close();
         const finalMessages: IMessage[] = [];

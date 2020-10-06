@@ -52,7 +52,7 @@ async (inRequest: Request, inResponse: Response) => {
         const messageBody: string = await imapWorker.getMessageBody({
             mailbox: inRequest.params.mailbox,
             id: parseInt(inRequest.params.id, 10)
-        })
+        });
         inResponse.status(200).send(messageBody);
     } catch (inError) {
         inResponse.status(500).send("error")
@@ -113,6 +113,7 @@ async (inRequest: Request, inResponse: Response) => {
 // UPDATE A CONTACT
 app.put("/contacts/:id/:name/:email",
 async (inRequest: Request, inResponse: Response) => {
+    console.log(inRequest.params)
     let {id, name, email} = inRequest.params
     try {
         const contactsWorker: Contacts.Worker = new Contacts.Worker();
@@ -128,6 +129,7 @@ app.delete("/contacts/:id",
 async (inRequest: Request, inResponse: Response) => {
     try {
         const contactsWorker: Contacts.Worker = new Contacts.Worker();
+        console.log(inRequest.params.id)
         await contactsWorker.deleteContact(inRequest.params.id)
         inResponse.status(200).json("ok");
     } catch (inError) {
